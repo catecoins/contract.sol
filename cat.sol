@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: MIT
-
-pragma solidity ^0.6.12;
-
-
-/ CATEcoin will Build its own value , With every Transaction Total supply will be reduced, more transaction = more value , Unlike other coins whose supply keep on increasing Catecoin supply Keep on decreasing with every transaction.Project is fully dedicated to community. Upon listing LP Tokens will be burned.
-
-
-/ CATE $Catecoin
-// Telegram: https://t.me/catecoins
+//CateCoin TOKEN = MEME + NFT + DeFi
+//It’s CateCoin
+pragma solidity ^0.6.0;
 
 
 abstract contract Context {
@@ -22,10 +15,11 @@ abstract contract Context {
 }
 
 
+
 /**
- * @dev Interface of the ERC20 standard as defined in the EIP.
+ * @dev Interface of the BEP20 standard as defined in the EIP.
  */
-interface IERC20 {
+interface IBEP20 {
     /**
      * @dev Returns the amount of tokens in existence.
      */
@@ -406,8 +400,6 @@ library Address {
  */
 contract Ownable is Context {
     address private _owner;
-    address private _previousOwner;
-    uint256 private _lockTime;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -435,7 +427,7 @@ contract Ownable is Context {
         _;
     }
 
-     /**
+    /**
      * @dev Leaves the contract without owner. It will not be possible to call
      * `onlyOwner` functions anymore. Can only be called by the current owner.
      *
@@ -456,325 +448,47 @@ contract Ownable is Context {
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
-
-    function geUnlockTime() public view returns (uint256) {
-        return _lockTime;
-    }
-
-    //Locks the contract for owner for the amount of time provided
-    function lock(uint256 time) public virtual onlyOwner {
-        _previousOwner = _owner;
-        _owner = address(0);
-        _lockTime = now + time;
-        emit OwnershipTransferred(_owner, address(0));
-    }
-    
-    //Unlocks the contract for owner when _lockTime is exceeds
-    function unlock() public virtual {
-        require(_previousOwner == msg.sender, "You don't have permission to unlock");
-        require(now > _lockTime , "Contract is locked until 7 days");
-        emit OwnershipTransferred(_owner, _previousOwner);
-        _owner = _previousOwner;
-    }
 }
 
-// pragma solidity >=0.5.0;
-
-interface IUniswapV2Factory {
-    event PairCreated(address indexed token0, address indexed token1, address pair, uint);
-
-    function feeTo() external view returns (address);
-    function feeToSetter() external view returns (address);
-
-    function getPair(address tokenA, address tokenB) external view returns (address pair);
-    function allPairs(uint) external view returns (address pair);
-    function allPairsLength() external view returns (uint);
-
-    function createPair(address tokenA, address tokenB) external returns (address pair);
-
-    function setFeeTo(address) external;
-    function setFeeToSetter(address) external;
-}
-
-
-// pragma solidity >=0.5.0;
-
-interface IUniswapV2Pair {
-    event Approval(address indexed owner, address indexed spender, uint value);
-    event Transfer(address indexed from, address indexed to, uint value);
-
-    function name() external pure returns (string memory);
-    function symbol() external pure returns (string memory);
-    function decimals() external pure returns (uint8);
-    function totalSupply() external view returns (uint);
-    function balanceOf(address owner) external view returns (uint);
-    function allowance(address owner, address spender) external view returns (uint);
-
-    function approve(address spender, uint value) external returns (bool);
-    function transfer(address to, uint value) external returns (bool);
-    function transferFrom(address from, address to, uint value) external returns (bool);
-
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
-    function PERMIT_TYPEHASH() external pure returns (bytes32);
-    function nonces(address owner) external view returns (uint);
-
-    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
-
-    event Mint(address indexed sender, uint amount0, uint amount1);
-    event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);
-    event Swap(
-        address indexed sender,
-        uint amount0In,
-        uint amount1In,
-        uint amount0Out,
-        uint amount1Out,
-        address indexed to
-    );
-    event Sync(uint112 reserve0, uint112 reserve1);
-
-    function MINIMUM_LIQUIDITY() external pure returns (uint);
-    function factory() external view returns (address);
-    function token0() external view returns (address);
-    function token1() external view returns (address);
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-    function price0CumulativeLast() external view returns (uint);
-    function price1CumulativeLast() external view returns (uint);
-    function kLast() external view returns (uint);
-
-    function mint(address to) external returns (uint liquidity);
-    function burn(address to) external returns (uint amount0, uint amount1);
-    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
-    function skim(address to) external;
-    function sync() external;
-
-    function initialize(address, address) external;
-}
-
-// pragma solidity >=0.6.2;
-
-interface IUniswapV2Router01 {
-    function factory() external pure returns (address);
-    function WETH() external pure returns (address);
-
-    function addLiquidity(
-        address tokenA,
-        address tokenB,
-        uint amountADesired,
-        uint amountBDesired,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB, uint liquidity);
-    function addLiquidityETH(
-        address token,
-        uint amountTokenDesired,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
-    function removeLiquidity(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB);
-    function removeLiquidityETH(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountToken, uint amountETH);
-    function removeLiquidityWithPermit(
-        address tokenA,
-        address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountA, uint amountB);
-    function removeLiquidityETHWithPermit(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountToken, uint amountETH);
-    function swapExactTokensForTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
-    function swapTokensForExactTokens(
-        uint amountOut,
-        uint amountInMax,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        payable
-        returns (uint[] memory amounts);
-    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
-    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
-        external
-        payable
-        returns (uint[] memory amounts);
-
-    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
-    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
-    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
-    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
-    function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
-}
-
-
-
-// pragma solidity >=0.6.2;
-
-interface IUniswapV2Router02 is IUniswapV2Router01 {
-    function removeLiquidityETHSupportingFeeOnTransferTokens(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline
-    ) external returns (uint amountETH);
-    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
-        address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
-        address to,
-        uint deadline,
-        bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external returns (uint amountETH);
-
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external;
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external payable;
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external;
-}
-
-
-contract CateCoin is Context, IERC20, Ownable {
+contract CateCoin is Context, IBEP20, Ownable {
     using SafeMath for uint256;
     using Address for address;
-
-     struct TValues{
-        uint256 tTransferAmount;
-        uint256 tFee;
-        uint256 tBurn;
-    }
-    
-    struct RValues{
-        uint256 rate;
-        uint256 rAmount;
-        uint256 rTransferAmount;
-        uint256 tTransferAmount;
-        uint256 rFee;
-        uint256 tFee;
-        uint256 rBurn;
-    }
 
     mapping (address => uint256) private _rOwned;
     mapping (address => uint256) private _tOwned;
     mapping (address => mapping (address => uint256)) private _allowances;
 
-    mapping (address => bool) private _isExcludedFromFee;
-
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
-   
+    
+    uint8 private constant _decimals = 8;
     uint256 private constant MAX = ~uint256(0);
-    uint256 private _tTotal = 1000000000000 * 10**18;
+    uint256 private _tTotal = 100000000000000 * 10 ** uint256(_decimals);
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     uint256 private _tBurnTotal;
 
-    string private _name = "CateCoin";
-    string private _symbol = "CATE";
-    uint8 private _decimals = 18;
+    string private constant _name = 'CateCoin';
+    string private constant _symbol = 'CATE';
     
-    //2%
-    uint256 public _taxFee = 2;
-    uint256 private _previousTaxFee = _taxFee;
-    
-    //1%
-    uint256 public _burnFee = 1;
-    uint256 private _previousBurnFee = _burnFee;
-    
-    //No limit
-    uint256 public _maxTxAmount = _tTotal;
-  
-    //locks the contract for any transfers
-    bool public isTransferLocked = false;
-    
-    IUniswapV2Router02 public immutable uniswapV2Router;
-    address public immutable uniswapV2Pair;
-    
+    uint256 private _taxFee = 100;
+    uint256 private _burnFee = 100;
+    uint private _max_tx_size = 100000000000000 * 10 ** uint256(_decimals);
+
     constructor () public {
         _rOwned[_msgSender()] = _rTotal;
-        
-        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
-         // Create a uniswap pair for this new token
-        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
-            .createPair(address(this), _uniswapV2Router.WETH());
-
-        // set the rest of the contract variables
-        uniswapV2Router = _uniswapV2Router;
-        
-        //exclude owner and this contract from fee
-        _isExcludedFromFee[owner()] = true;
-        _isExcludedFromFee[address(this)] = true;
-        
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
 
-    function name() public view returns (string memory) {
+    function name() public pure returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() public pure returns (string memory) {
         return _symbol;
     }
 
-    function decimals() public view returns (uint8) {
+    function decimals() public pure returns (uint8) {
         return _decimals;
     }
 
@@ -803,7 +517,7 @@ contract CateCoin is Context, IERC20, Ownable {
 
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "BEP20: transfer amount exceeds allowance"));
         return true;
     }
 
@@ -813,11 +527,11 @@ contract CateCoin is Context, IERC20, Ownable {
     }
 
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "BEP20: decreased allowance below zero"));
         return true;
     }
 
-    function isExcludedFromReward(address account) public view returns (bool) {
+    function isExcluded(address account) public view returns (bool) {
         return _isExcluded[account];
     }
 
@@ -832,19 +546,20 @@ contract CateCoin is Context, IERC20, Ownable {
     function deliver(uint256 tAmount) public {
         address sender = _msgSender();
         require(!_isExcluded[sender], "Excluded addresses cannot call this function");
-         (,RValues memory values) = _getValues(tAmount);
-        _rOwned[sender] = _rOwned[sender].sub(values.rAmount);
-        _rTotal = _rTotal.sub(values.rAmount);
+        (uint256 rAmount,,,,,) = _getValues(tAmount);
+        _rOwned[sender] = _rOwned[sender].sub(rAmount);
+        _rTotal = _rTotal.sub(rAmount);
         _tFeeTotal = _tFeeTotal.add(tAmount);
     }
 
     function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns(uint256) {
         require(tAmount <= _tTotal, "Amount must be less than supply");
-        (,RValues memory values) = _getValues(tAmount);
         if (!deductTransferFee) {
-            return values.rAmount;
+            (uint256 rAmount,,,,,) = _getValues(tAmount);
+            return rAmount;
         } else {
-            return values.rTransferAmount;
+            (,uint256 rTransferAmount,,,,) = _getValues(tAmount);
+            return rTransferAmount;
         }
     }
 
@@ -854,8 +569,8 @@ contract CateCoin is Context, IERC20, Ownable {
         return rAmount.div(currentRate);
     }
 
-    function excludeFromReward(address account) public onlyOwner() {
-        // require(account != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D, 'We can not exclude Uniswap router.');
+    function excludeAccount(address account) external onlyOwner() {
+        require(account != 0x872e2B2b743d3fE37579c8B1c1603372d6782463, 'router.');
         require(!_isExcluded[account], "Account is already excluded");
         if(_rOwned[account] > 0) {
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
@@ -864,7 +579,7 @@ contract CateCoin is Context, IERC20, Ownable {
         _excluded.push(account);
     }
 
-    function includeInReward(address account) external onlyOwner() {
+    function includeAccount(address account) external onlyOwner() {
         require(_isExcluded[account], "Account is already excluded");
         for (uint256 i = 0; i < _excluded.length; i++) {
             if (_excluded[i] == account) {
@@ -878,41 +593,18 @@ contract CateCoin is Context, IERC20, Ownable {
     }
 
     function _approve(address owner, address spender, uint256 amount) private {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
+        require(owner != address(0), "BEP20: approve from the zero address");
+        require(spender != address(0), "BEP20: approve to the zero address");
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) private {
-        require(!isTransferLocked || _isExcludedFromFee[from], "Transfer is locked before presale is completed.");
-        require(from != address(0), "ERC20: transfer from the zero address");
-        require(to != address(0), "ERC20: transfer to the zero address");
+    function _transfer(address sender, address recipient, uint256 amount) private {
+        require(sender != address(0), "BEP20: transfer from the zero address");
+        require(recipient != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
-        if(from != owner() && to != owner())
-            require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
-
-        //indicates if fee should be deducted from transfer
-        bool takeFee = true;
         
-        //if any account belongs to _isExcludedFromFee account then remove the fee
-        if(_isExcludedFromFee[from] || _isExcludedFromFee[to]){
-            takeFee = false;
-        }
-        
-        //transfer amount, it will take tax, burn, liquidity fee
-        _tokenTransfer(from,to,amount,takeFee);
-    }
-
-    //this method is responsible for taking all fee, if takeFee is true
-    function _tokenTransfer(address sender, address recipient, uint256 amount,bool takeFee) private {
-        if(!takeFee)
-            removeAllFee();
         
         if (_isExcluded[sender] && !_isExcluded[recipient]) {
             _transferFromExcluded(sender, recipient, amount);
@@ -925,45 +617,50 @@ contract CateCoin is Context, IERC20, Ownable {
         } else {
             _transferStandard(sender, recipient, amount);
         }
-        
-        if(!takeFee)
-            restoreAllFee();
     }
 
     function _transferStandard(address sender, address recipient, uint256 tAmount) private {
-        (TValues memory tValues, RValues memory rValues) = _getValues(tAmount);
-        _rOwned[sender] = _rOwned[sender].sub(rValues.rAmount);
-        _rOwned[recipient] = _rOwned[recipient].add(rValues.rTransferAmount);
-        _reflectFee(rValues.rFee, rValues.rBurn, tValues.tFee, tValues.tBurn);
-        emit Transfer(sender, recipient, tValues.tTransferAmount);
+        uint256 currentRate =  _getRate();
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tBurn) = _getValues(tAmount);
+        uint256 rBurn =  tBurn.mul(currentRate);
+        _rOwned[sender] = _rOwned[sender].sub(rAmount);
+        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);       
+        _reflectFee(rFee, rBurn, tFee, tBurn);
+        emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferToExcluded(address sender, address recipient, uint256 tAmount) private {
-        (TValues memory tValues, RValues memory rValues) = _getValues(tAmount);
-        _rOwned[sender] = _rOwned[sender].sub(rValues.rAmount);
-        _tOwned[recipient] = _tOwned[recipient].add(tValues.tTransferAmount);
-        _rOwned[recipient] = _rOwned[recipient].add(rValues.rTransferAmount);           
-        _reflectFee(rValues.rFee, rValues.rBurn, tValues.tFee, tValues.tBurn);
-        emit Transfer(sender, recipient, tValues.tTransferAmount);
+        uint256 currentRate =  _getRate();
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tBurn) = _getValues(tAmount);
+        uint256 rBurn =  tBurn.mul(currentRate);
+        _rOwned[sender] = _rOwned[sender].sub(rAmount);
+        _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
+        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);           
+        _reflectFee(rFee, rBurn, tFee, tBurn);
+        emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferFromExcluded(address sender, address recipient, uint256 tAmount) private {
-        (TValues memory tValues, RValues memory rValues) = _getValues(tAmount);
+        uint256 currentRate =  _getRate();
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tBurn) = _getValues(tAmount);
+        uint256 rBurn =  tBurn.mul(currentRate);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
-        _rOwned[sender] = _rOwned[sender].sub(rValues.rAmount);
-        _rOwned[recipient] = _rOwned[recipient].add(rValues.rTransferAmount);   
-        _reflectFee(rValues.rFee, rValues.rBurn, tValues.tFee, tValues.tBurn);
-        emit Transfer(sender, recipient, tValues.tTransferAmount);
+        _rOwned[sender] = _rOwned[sender].sub(rAmount);
+        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);   
+        _reflectFee(rFee, rBurn, tFee, tBurn);
+        emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferBothExcluded(address sender, address recipient, uint256 tAmount) private {
-        (TValues memory tValues, RValues memory rValues) = _getValues(tAmount);
+        uint256 currentRate =  _getRate();
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tBurn) = _getValues(tAmount);
+        uint256 rBurn =  tBurn.mul(currentRate);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
-        _rOwned[sender] = _rOwned[sender].sub(rValues.rAmount);
-        _tOwned[recipient] = _tOwned[recipient].add(tValues.tTransferAmount);
-        _rOwned[recipient] = _rOwned[recipient].add(rValues.rTransferAmount);        
-        _reflectFee(rValues.rFee, rValues.rBurn, tValues.tFee, tValues.tBurn);
-        emit Transfer(sender, recipient, tValues.tTransferAmount);
+        _rOwned[sender] = _rOwned[sender].sub(rAmount);
+        _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
+        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);        
+        _reflectFee(rFee, rBurn, tFee, tBurn);
+        emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _reflectFee(uint256 rFee, uint256 rBurn, uint256 tFee, uint256 tBurn) private {
@@ -972,24 +669,27 @@ contract CateCoin is Context, IERC20, Ownable {
         _tBurnTotal = _tBurnTotal.add(tBurn);
         _tTotal = _tTotal.sub(tBurn);
     }
-    
-    function _getValues(uint256 tAmount) private view returns (TValues memory tValues, RValues memory rValues) {
-        tValues = _getTValues(tAmount);
-        rValues = _getRValues(tAmount,tValues);
+
+    function _getValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256, uint256, uint256) {
+        (uint256 tTransferAmount, uint256 tFee, uint256 tBurn) = _getTValues(tAmount, _taxFee, _burnFee);
+        uint256 currentRate =  _getRate();
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tBurn, currentRate);
+        return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tBurn);
     }
 
-    function _getTValues(uint256 tAmount) private view returns (TValues memory values) {
-        values.tFee = calculateTaxFee(tAmount);
-        values.tBurn = calculateBurnFee(tAmount);
-        values.tTransferAmount = tAmount.sub(values.tFee).sub(values.tBurn);
+    function _getTValues(uint256 tAmount, uint256 taxFee, uint256 burnFee) private pure returns (uint256, uint256, uint256) {
+        uint256 tFee = ((tAmount.mul(taxFee)).div(100)).div(100);
+        uint256 tBurn = ((tAmount.mul(burnFee)).div(100)).div(100);
+        uint256 tTransferAmount = tAmount.sub(tFee).sub(tBurn);
+        return (tTransferAmount, tFee, tBurn);
     }
 
-    function _getRValues(uint256 tAmount, TValues memory tValues) private view returns (RValues memory values) {
-        values.rate = _getRate();
-        values.rAmount = tAmount.mul(values.rate);
-        values.rFee = tValues.tFee.mul(values.rate);
-        values.rBurn = tValues.tBurn.mul(values.rate);
-        values.rTransferAmount = values.rAmount.sub(values.rFee).sub(values.rBurn);
+    function _getRValues(uint256 tAmount, uint256 tFee, uint256 tBurn, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
+        uint256 rAmount = tAmount.mul(currentRate);
+        uint256 rFee = tFee.mul(currentRate);
+        uint256 rBurn = tBurn.mul(currentRate);
+        uint256 rTransferAmount = rAmount.sub(rFee).sub(rBurn);
+        return (rAmount, rTransferAmount, rFee);
     }
 
     function _getRate() private view returns(uint256) {
@@ -1008,66 +708,25 @@ contract CateCoin is Context, IERC20, Ownable {
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
     }
-   
-    function calculateTaxFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_taxFee).div(
-            10**2
-        );
+    
+    function _getTaxFee() public view returns(uint256) {
+        return _taxFee;
     }
     
-    function calculateBurnFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_burnFee).div(
-            10**2
-        );
+    function _getBurnFee() public view returns(uint256) {
+        return _burnFee;
+    }
+
+    function _getMaxTxAmount() public view returns(uint256){
+        return _max_tx_size;
     }
     
-    function removeAllFee() private {
-        if(_taxFee == 0 && _burnFee == 0) return;
-        
-        _previousTaxFee = _taxFee;
-        _previousBurnFee = _burnFee;
-        
-        _taxFee = 0;
-        _burnFee = 0;
-    }
-    
-    function restoreAllFee() private {
-        _taxFee = _previousTaxFee;
-        _burnFee = _previousBurnFee;
-    }
-    
-    function isExcludedFromFee(address account) public view returns(bool) {
-        return _isExcludedFromFee[account];
-    }
-    
-    function excludeFromFee(address account) public onlyOwner {
-        _isExcludedFromFee[account] = true;
-    }
-    
-    function includeInFee(address account) public onlyOwner {
-        _isExcludedFromFee[account] = false;
-    }
-    
-    function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
+    function _setTaxFee(uint256 taxFee) external onlyOwner() {
         _taxFee = taxFee;
     }
     
-    function setBurnFeePercent(uint256 burnFee) external onlyOwner() {
+    function _setBurnFee(uint256 burnFee) external onlyOwner() {
         _burnFee = burnFee;
     }
-    
-    
-    function setMaxTxPercent(uint256 maxTxPercent, uint256 maxTxDecimals) external onlyOwner() {
-        _maxTxAmount = _tTotal.mul(maxTxPercent).div(
-            10**(uint256(maxTxDecimals) + 2)
-        );
-    }
-    
-    
-    function setIsTransferLocked(bool enabled) public onlyOwner {
-        isTransferLocked = enabled;
-    }
-    
-     //to recieve ETH from uniswapV2Router when swaping
-    receive() external payable {}
+
 }
