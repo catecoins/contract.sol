@@ -721,11 +721,13 @@ contract CateCoin is Context, IBEP20, Ownable {
         return _max_tx_size;
     }
     
-    function _setTaxFee(uint256 taxFee) external onlyOwner() {
+function _setTaxFee(uint256 taxFee) external onlyOwner() {
+        require(taxFee <=100 ); //limit taxFee to 1%
         _taxFee = taxFee;
     }
     
     function _setBurnFee(uint256 burnFee) external onlyOwner() {
+        require(burnFee <=100 ); //limit burnFee to 1% 
         _burnFee = burnFee;
     }
 
